@@ -73,15 +73,19 @@ export default {
             temperature: 0.7,
             max_tokens: 2000,
         });
-        const assistantMessage = {
+        const assistantMessage = ref({
           id: Date.now() + 1,
           role: "assistant",
           content: "",
           timestamp: new Date().toISOString(),
-        }
-        messages.value.push(assistantMessage)
+        });
+        messages.value.push(assistantMessage.value);
         for await (const chunk of completion) {
-            assistantMessage.content += chunk.choices[0].delta.content
+           if (chunk.choices[0]?.delta?.content) {
+            // 直接更新内容，Vue会自动检测变化
+            assistantMessage.value.content += chunk.choices[0].delta.content;
+            console.log(assistantMessage.value.content);
+          }
         }
 
       } catch (err) {
