@@ -24,28 +24,28 @@
 
 ### 安装依赖
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ### 进入server文件夹，运行模拟后端服务器
-\`\`\`bash
+```bash
 cd ./server
 npm init -y
-npm install express cors body-parser jsonwebtoken
+npm install
 node server.js
-\`\`\`
+```
 ### 启动开发服务器
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 ### 构建生产版本
 
-\`\`\`bash
+```bash
 npm run build
-\`\`\`
+```
 
 ## API集成
 
@@ -61,7 +61,7 @@ npm run build
 
 ## 项目结构
 
-\`\`\`
+```
 src/
 ├── views/          # 页面组件
 ├── layouts/        # 布局组件
@@ -69,3 +69,4 @@ src/
 ├── router/         # 路由配置
 ├── utils/          # 工具函数
 └── main.js         # 应用入口
+```
