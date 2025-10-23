@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { ref, computed } from "vue"
 import axios from "axios"
+import api from "../utils/api"
 
 export const useAuthStore = defineStore("auth", () => {
   const token = ref(localStorage.getItem("token") || "")
@@ -12,7 +13,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       // 这里应该调用同济统一身份认证API
       // 由于实际API需要OAuth流程，这里简化处理
-      const response = await axios.post("/api/tongji/auth/login", {
+      const response = await api.post("/api/tongji/auth/login", {
         studentId,
         password,
       })
@@ -32,11 +33,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const fetchStudentInfo = async () => {
     try {
-      const response = await axios.get("/api/tongji/v2/dc/user/student_infos", {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      })
+      const response = await api.get("/api/tongji/v2/dc/user/student_infos")
       studentInfo.value = response.data
     } catch (error) {
       console.error("Failed to fetch student info:", error)
