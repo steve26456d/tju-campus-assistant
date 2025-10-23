@@ -21,12 +21,20 @@
 
 ## 开发指南
 
+
 ### 安装依赖
 
 \`\`\`bash
 npm install
 \`\`\`
 
+### 进入server文件夹，运行模拟后端服务器
+\`\`\`bash
+cd ./server
+npm init -y
+npm install express cors body-parser jsonwebtoken
+node server.js
+\`\`\`
 ### 启动开发服务器
 
 \`\`\`bash
