@@ -1,126 +1,106 @@
 "use client"
 
 import { ref, onMounted } from "vue"
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+
+const initializeClient = async (client) => {
+  const mcpClient = new Client({
+    name: "weather-report",
+    version: "1.0.0"
+  })
+  const transport = new SSEClientTransport(new URL(`http://localhost:3000/api/sse?token=${import.meta.env.VITE_MCP_SERVER_TOKEN}`))
+  console.log("mcpClient: ",mcpClient)
+  console.log("Transport: ",transport)
+  try {
+    console.log("Connecting to MCP...");
+    // 正确处理连接
+    await mcpClient.connect(transport);
+    console.log("连接成功");
+    client.value = mcpClient;
+  } catch (error) {
+    console.error("连接失败:", error);
+  }
+};
+
+const callToolWeather = async (client) => {
+  if(!client.value)
+    return
+  try{
+    const result = await client.value.callTool({
+      name: "get_weather",
+      arguments: {
+        city: "上海"
+      }
+    })
+    console.log(JSON.parse(result.content[0].text))
+    return result
+
+  } catch(error){
+    console.log("callToolWeather Error:",error)
+  }
+}
+
+const divideApiLevel = (api) => {
+  switch(api){
+    case api <= 50:
+      return '优'
+    case api > 50 && api <= 100:
+      return '良'
+    case api > 100 && api <= 150:
+      return '轻度污染'
+    case api > 150 && api <= 200:
+      return '中度污染'
+    case api > 200 && api <= 300:
+      return '重度污染'
+    case api > 300:
+      return '严重污染'
+  }
+}
 
 export default {
   name: "Weather",
   setup() {
-    const currentWeather = ref(null)
+    const realTimeWeather = ref(null)
     const forecast = ref([])
+    const todayWeather = ref(null)
     const loading = ref(true)
     const error = ref("")
     const city = ref("上海")
-    const eventSource = ref(null)
+    const client = ref(null)
 
     const fetchWeather = async () => {
       loading.value = true
       error.value = ""
 
       try {
-        // 使用SSE连接聚合MCP Server
-        if (eventSource.value) {
-          eventSource.value.close()
-        }
+        if(client.value)
+          client.value.close()
 
-        // 注意：实际使用时需要配置正确的MCP Server连接
-        // eventSource.value = new EventSource(`https://mcp.juhe.cn/sse?city=${city.value}`)
+        await initializeClient(client)
 
-        // eventSource.value.onmessage = (event) => {
-        //   const data = JSON.parse(event.data)
-        //   currentWeather.value = data.current
-        //   forecast.value = data.forecast
-        //   loading.value = false
-        // }
+        console.log("client: ",client)
 
-        // eventSource.value.onerror = (err) => {
-        //   console.error('SSE connection error:', err)
-        //   error.value = '天气数据连接失败'
-        //   loading.value = false
-        // }
+        const r = await callToolWeather(client)
 
-        // 模拟数据用于演示
-        setTimeout(() => {
-          currentWeather.value = {
-            temperature: 8,
-            feelsLike: 5,
-            condition: "多云",
-            humidity: 65,
-            windSpeed: 12,
-            windDirection: "东北风",
-            aqi: 85,
-            aqiLevel: "良",
-            updateTime: "2025-01-20 14:30",
-          }
+        const data = JSON.parse(r.content[0].text).result
 
-          forecast.value = [
-            {
-              date: "今天",
-              day: "周一",
-              high: 10,
-              low: 5,
-              condition: "多云",
-              icon: "☁️",
-            },
-            {
-              date: "明天",
-              day: "周二",
-              high: 12,
-              low: 6,
-              condition: "晴",
-              icon: "☀️",
-            },
-            {
-              date: "01/22",
-              day: "周三",
-              high: 11,
-              low: 4,
-              condition: "阴",
-              icon: "🌥️",
-            },
-            {
-              date: "01/23",
-              day: "周四",
-              high: 9,
-              low: 3,
-              condition: "小雨",
-              icon: "🌧️",
-            },
-            {
-              date: "01/24",
-              day: "周五",
-              high: 13,
-              low: 7,
-              condition: "晴",
-              icon: "☀️",
-            },
-            {
-              date: "01/25",
-              day: "周六",
-              high: 14,
-              low: 8,
-              condition: "多云",
-              icon: "⛅",
-            },
-            {
-              date: "01/26",
-              day: "周日",
-              high: 12,
-              low: 6,
-              condition: "晴",
-              icon: "☀️",
-            },
-          ]
+        realTimeWeather.value = data.realtime
 
-          loading.value = false
-        }, 1000)
+        forecast.value = data.future
+
+        todayWeather.value = forecast.value[0]
+
       } catch (err) {
         console.error("Failed to fetch weather:", err)
         error.value = "获取天气信息失败，请稍后重试"
         loading.value = false
+      } finally {
+        loading.value = false
       }
     }
 
-    const getWeatherIcon = (condition) => {
+    const getWeatherIcon = (info) => {
       const icons = {
         晴: "☀️",
         多云: "☁️",
@@ -131,7 +111,7 @@ export default {
         雪: "❄️",
         雾: "🌫️",
       }
-      return icons[condition] || "🌤️"
+      return icons[info] || "🌤️"
     }
 
     const getAQIColor = (aqi) => {
@@ -207,21 +187,20 @@ export default {
         )}
 
         {/* Current Weather */}
-        {!loading.value && currentWeather.value && (
+        {!loading.value && realTimeWeather.value && (
           <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div class="flex items-center gap-6">
-                <div class="text-7xl">{getWeatherIcon(currentWeather.value.condition)}</div>
+                <div class="text-7xl">{getWeatherIcon(realTimeWeather.value.info)}</div>
                 <div>
                   <div class="text-5xl font-bold mb-2">
-                    <span class={getTemperatureColor(currentWeather.value.temperature)}>
-                      {currentWeather.value.temperature}°C
+                    <span class={getTemperatureColor(realTimeWeather.value.temperature)}>
+                      {realTimeWeather.value.temperature}°C
                     </span>
                   </div>
-                  <div class="text-xl mb-1">{currentWeather.value.condition}</div>
-                  <div class="text-sm opacity-90">体感温度 {currentWeather.value.feelsLike}°C</div>
+                  <div class="text-xl mb-1">{realTimeWeather.value.info}</div>
                   <div class="text-xs opacity-75 mt-2">
-                    {city.value} · {currentWeather.value.updateTime}
+                    {city.value} · {todayWeather.value.date}
                   </div>
                 </div>
               </div>
@@ -229,18 +208,18 @@ export default {
               <div class="grid grid-cols-2 gap-4">
                 <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
                   <div class="text-sm opacity-90 mb-1">湿度</div>
-                  <div class="text-2xl font-bold">{currentWeather.value.humidity}%</div>
+                  <div class="text-2xl font-bold">{realTimeWeather.value.humidity}%</div>
                 </div>
                 <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
                   <div class="text-sm opacity-90 mb-1">风速</div>
-                  <div class="text-2xl font-bold">{currentWeather.value.windSpeed}km/h</div>
+                  <div class="text-2xl font-bold">{realTimeWeather.value.power}</div>
                 </div>
                 <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm col-span-2">
                   <div class="text-sm opacity-90 mb-1">空气质量</div>
                   <div class="flex items-center justify-between">
-                    <div class="text-2xl font-bold">{currentWeather.value.aqi}</div>
-                    <div class={`px-3 py-1 rounded-full text-sm font-medium ${getAQIColor(currentWeather.value.aqi)}`}>
-                      {currentWeather.value.aqiLevel}
+                    <div class="text-2xl font-bold">{realTimeWeather.value.aqi}</div>
+                    <div class={`px-3 py-1 rounded-full text-sm font-medium ${getAQIColor(parseInt(realTimeWeather.value.aqi))}`}>
+                      {divideApiLevel(parseInt(realTimeWeather.value.aqi))}
                     </div>
                   </div>
                 </div>
@@ -253,21 +232,19 @@ export default {
         {!loading.value && forecast.value.length > 0 && (
           <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="p-6 border-b border-border">
-              <h3 class="text-lg font-semibold text-text">未来7天预报</h3>
+              <h3 class="text-lg font-semibold text-text">未来5天预报</h3>
             </div>
 
             {/* Desktop View */}
-            <div class="hidden md:grid md:grid-cols-7 divide-x divide-border">
+            <div class="hidden md:grid md:grid-cols-5 divide-x divide-border">
               {forecast.value.map((day, index) => (
                 <div key={index} class="p-4 text-center hover:bg-surface transition-colors">
                   <div class="text-sm font-medium text-text mb-2">{day.date}</div>
-                  <div class="text-xs text-text-secondary mb-3">{day.day}</div>
-                  <div class="text-4xl mb-3">{day.icon}</div>
-                  <div class="text-sm text-text-secondary mb-2">{day.condition}</div>
+                  {/* <div class="text-xs text-text-secondary mb-3">{day.day}</div> */}
+                  <div class="text-4xl mb-3">{getWeatherIcon(day.weather)}</div>
+                  <div class="text-sm text-text-secondary mb-2">{day.weather}</div>
                   <div class="flex items-center justify-center gap-2">
-                    <span class="text-red-600 font-semibold">{day.high}°</span>
-                    <span class="text-text-secondary">/</span>
-                    <span class="text-blue-600 font-semibold">{day.low}°</span>
+                    <span class="text-red-600 font-semibold">{day.temperature}</span>
                   </div>
                 </div>
               ))}
@@ -278,18 +255,16 @@ export default {
               {forecast.value.map((day, index) => (
                 <div key={index} class="p-4 flex items-center justify-between hover:bg-surface transition-colors">
                   <div class="flex items-center gap-4">
-                    <div class="text-3xl">{day.icon}</div>
+                    <div class="text-3xl">{getWeatherIcon(day.weather)}</div>
                     <div>
                       <div class="font-medium text-text">{day.date}</div>
-                      <div class="text-sm text-text-secondary">{day.day}</div>
+                      {/* <div class="text-sm text-text-secondary">{day.day}</div> */}
                     </div>
                   </div>
                   <div class="text-right">
-                    <div class="text-sm text-text-secondary mb-1">{day.condition}</div>
+                    <div class="text-sm text-text-secondary mb-1">{day.weather}</div>
                     <div class="flex items-center gap-2">
-                      <span class="text-red-600 font-semibold">{day.high}°</span>
-                      <span class="text-text-secondary">/</span>
-                      <span class="text-blue-600 font-semibold">{day.low}°</span>
+                      <span class="text-red-600 font-semibold">{day.temperature}</span>
                     </div>
                   </div>
                 </div>
@@ -299,7 +274,7 @@ export default {
         )}
 
         {/* Weather Tips */}
-        {!loading.value && currentWeather.value && (
+        {!loading.value && realTimeWeather.value && (
           <div class="bg-white rounded-xl shadow-sm p-6">
             <h3 class="text-lg font-semibold text-text mb-4">生活建议</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -308,9 +283,9 @@ export default {
                 <div>
                   <div class="font-medium text-text mb-1">穿衣指数</div>
                   <div class="text-sm text-text-secondary">
-                    {currentWeather.value.temperature > 20
+                    {parseInt(realTimeWeather.value.temperature) > 20
                       ? "适合穿短袖"
-                      : currentWeather.value.temperature > 15
+                      : parseInt(realTimeWeather.value.temperature) > 15
                         ? "适合穿长袖"
                         : "建议穿外套"}
                   </div>
@@ -322,7 +297,7 @@ export default {
                 <div>
                   <div class="font-medium text-text mb-1">运动指数</div>
                   <div class="text-sm text-text-secondary">
-                    {currentWeather.value.aqi < 100 ? "适宜户外运动" : "建议室内运动"}
+                    {parseInt(realTimeWeather.value.aqi) < 100 ? "适宜户外运动" : "建议室内运动"}
                   </div>
                 </div>
               </div>
@@ -332,7 +307,7 @@ export default {
                 <div>
                   <div class="font-medium text-text mb-1">出行建议</div>
                   <div class="text-sm text-text-secondary">
-                    {currentWeather.value.condition.includes("雨") ? "记得带伞" : "无需带伞"}
+                    {realTimeWeather.value.info.includes("雨") ? "记得带伞" : "无需带伞"}
                   </div>
                 </div>
               </div>

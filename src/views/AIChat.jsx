@@ -84,7 +84,8 @@ export default {
            if (chunk.choices[0]?.delta?.content) {
             // 直接更新内容，Vue会自动检测变化
             assistantMessage.value.content += chunk.choices[0].delta.content;
-            console.log(assistantMessage.value.content);
+            if(process.env.NODE_ENV === "development")
+              console.log(assistantMessage.value.content);
           }
         }
 
@@ -210,7 +211,7 @@ export default {
           ))}
 
           {/* Loading Indicator */}
-          {loading.value && (
+          {/* {loading.value && (
             <div class="flex justify-start">
               <div class="flex gap-3 max-w-[80%]">
                 <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center flex-shrink-0 text-xl">
@@ -231,7 +232,7 @@ export default {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Error Message */}
           {error.value && (

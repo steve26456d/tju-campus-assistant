@@ -12,10 +12,16 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/tongji/, ""),
       },
-      "/api/mcp": {
+      "/api/sse": {
         target: "https://mcp.juhe.cn",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/mcp/, ""),
+        rewrite: (path) => path.replace(/^\/api\/sse/, "/sse"),
+        secure: false
+      },
+       "/messages": {  // 新增这一条
+        target: "https://mcp.juhe.cn", 
+        changeOrigin: true,
+        secure: false
       },
       "/api/agent": {
         target: "https://agent.tongji.edu.cn",
