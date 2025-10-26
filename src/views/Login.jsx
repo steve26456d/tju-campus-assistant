@@ -82,7 +82,7 @@ export default {
               <button
                 type="submit"
                 disabled={loading.value}
-                class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full bg-primary hover:bg-blue-700 hover:text-white text-text font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading.value ? "登录中..." : "登录"}
               </button>

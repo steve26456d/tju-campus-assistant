@@ -8,7 +8,7 @@
 - 💳 一卡通流水记录
 - 🌤️ 天气预报（聚合MCP Server）
 - 🗺️ 路线规划（百度地图API）
-- 🤖 AI学习助手（Deepseek-R1）
+- 🤖 AI学习助手（qwen3-max）
 
 ## 技术栈
 
@@ -57,7 +57,7 @@ npm run build
 ### 第三方API
 - 天气预报MCP Server: `https://mcp.juhe.cn/sse`
 - 百度地图路线规划: JS API GL
-- AI Agent: `https://agent.tongji.edu.cn/api/proxy/api/v1`
+- AI Agent: `https://dashscope.aliyuncs.com/compatible-mode/v1`
 
 ## 项目结构
 
