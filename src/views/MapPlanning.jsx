@@ -18,16 +18,17 @@ export default {
 
     // 同济大学常用地点
     const campusLocations = [
-      { name: "四平路校区南门", lat: 31.2816, lng: 121.5046 },
-      { name: "同济楼", lat: 31.2825, lng: 121.5055 },
-      { name: "图书馆", lat: 31.2835, lng: 121.5065 },
-      { name: "第一食堂", lat: 31.282, lng: 121.505 },
-      { name: "第二食堂", lat: 31.283, lng: 121.506 },
-      { name: "体育馆", lat: 31.284, lng: 121.507 },
-      { name: "实验楼", lat: 31.2828, lng: 121.5058 },
-      { name: "计算机楼", lat: 31.2832, lng: 121.5062 },
-      { name: "外语楼", lat: 31.2822, lng: 121.5052 },
-      { name: "学生宿舍区", lat: 31.2815, lng: 121.5048 },
+      { name: "同济大学(嘉定校区)-南门", lat: 31.288411, lng: 121.218463 },
+      { name: "同济大学(嘉定校区)-安楼", lat: 31.292102, lng: 121.220120 },
+      { name: "同济大学(嘉定校区)-博楼", lat: 31.292598, lng: 121.220523 },
+      { name: "同济大学(嘉定校区)-广楼", lat: 31.290970, lng: 121.223253 },
+      { name: "同济大学(嘉定校区)-复楼", lat: 31.291721, lng: 121.221904 },
+      { name: "同济大学(嘉定校区)-图书馆", lat: 31.292733, lng: 121.248421 },
+      { name: "同济大学(嘉定校区)-食堂", lat: 31.293791, lng: 121.223470 },
+      { name: "同济大学(嘉定校区)-济事楼", lat: 31.288056, lng: 121.220673 },
+      { name: "嘉定同济体育中心(嘉定校区)", lat: 31.296385, lng: 121.222687 },
+      { name: "同济大学篮球场", lat: 31.293760, lng: 121.221176 },
+      { name: "同济大学(嘉定校区)-学生公寓", lat: 31.292960, lng: 121.224333 },
     ]
 
     const initMap = () => {
@@ -38,8 +39,8 @@ export default {
 
       // 初始化地图
       map.value = new window.BMapGL.Map(mapContainer.value)
-      const point = new window.BMapGL.Point(121.5055, 31.2825) // 同济大学
-      map.value.centerAndZoom(point, 16)
+      const point = new window.BMapGL.Point(121.220757,31.292247) // 同济大学
+      map.value.centerAndZoom(point, 19)
       map.value.enableScrollWheelZoom(true)
 
       // 添加校园地点标记
@@ -76,22 +77,118 @@ export default {
         console.error("Failed to fetch today's courses:", err)
 
         // 模拟数据
-        todayCourses.value = [
-          {
-            courseName: "高等数学",
-            location: "同济楼A301",
-            startTime: "08:00",
-            endTime: "09:35",
-          },
-          {
-            courseName: "程序设计",
-            location: "计算机楼C401",
-            startTime: "13:00",
-            endTime: "14:35",
-          },
-        ]
+        // todayCourses.value = [
+        //   {
+        //     courseName: "高等数学",
+        //     location: "同济楼A301",
+        //     startTime: "08:00",
+        //     endTime: "09:35",
+        //   },
+        //   {
+        //     courseName: "程序设计",
+        //     location: "计算机楼C401",
+        //     startTime: "13:00",
+        //     endTime: "14:35",
+        //   },
+        // ]
       }
     }
+
+    // const planRoute = () => {
+    //   if (!startPoint.value || !endPoint.value) {
+    //     alert("请输入起点和终点")
+    //     return
+    //   }
+
+    //   if (!window.BMapGL) {
+    //     alert("地图API未加载，请刷新页面重试")
+    //     return
+    //   }
+
+    //   loading.value = true
+
+    //   // 清除之前的路线
+    //   map.value.clearOverlays()
+
+    //   // 重新添加地点标记
+    //   campusLocations.forEach((location) => {
+    //     const marker = new window.BMapGL.Marker(new window.BMapGL.Point(location.lng, location.lat))
+    //     map.value.addOverlay(marker)
+    //   })
+
+    //   // 创建路线规划实例
+    //   let transit
+    //   if (travelMode.value === "walking") {
+    //     transit = new window.BMapGL.WalkingRoute(map.value, {
+    //       onSearchComplete: (results) => {
+    //         if (transit.getStatus() === window.BMAP_STATUS_SUCCESS) {
+    //           const plan = results.getPlan(0)
+    //           console.log('results:',results)
+
+    //           console.log('plan: ',plan);
+              
+    //           routeInfo.value = {
+    //             distance: plan.getDistance(true),
+    //             duration: plan.getDuration(true),
+    //             steps: plan.getNumRoutes(),
+    //           }
+
+    //           // 绘制路线
+    //           const pts = plan.getRoute(true)
+
+    //           console.log('pts: ',pts)
+    //           const polyline = new window.BMapGL.Polyline(pts, {
+    //             strokeColor: "#1e40af",
+    //             strokeWeight: 6,
+    //             strokeOpacity: 0.8,
+    //           })
+    //           map.value.addOverlay(polyline)
+    //           map.value.setViewport(pts)
+    //         }
+    //         loading.value = false
+    //       },
+    //     })
+    //   } else if (travelMode.value === "transit") {
+    //     transit = new window.BMapGL.TransitRoute(map.value, {
+    //       onSearchComplete: (results) => {
+    //         if (transit.getStatus() === window.BMAP_STATUS_SUCCESS) {
+    //           const plan = results.getPlan(0)
+    //           routeInfo.value = {
+    //             distance: plan.getDistance(true),
+    //             duration: plan.getDuration(true),
+    //             steps: plan.getNumRoutes(),
+    //           }
+    //         }
+    //         loading.value = false
+    //       },
+    //     })
+    //   } else {
+    //     transit = new window.BMapGL.DrivingRoute(map.value, {
+    //       onSearchComplete: (results) => {
+    //         if (transit.getStatus() === window.BMAP_STATUS_SUCCESS) {
+    //           const plan = results.getPlan(0)
+    //           routeInfo.value = {
+    //             distance: plan.getDistance(true),
+    //             duration: plan.getDuration(true),
+    //             steps: plan.getNumRoutes(),
+    //           }
+
+    //           const pts = plan.getPath()
+    //           const polyline = new window.BMapGL.Polyline(pts, {
+    //             strokeColor: "#0ea5e9",
+    //             strokeWeight: 6,
+    //             strokeOpacity: 0.8,
+    //           })
+    //           map.value.addOverlay(polyline)
+    //           map.value.setViewport(pts)
+    //         }
+    //         loading.value = false
+    //       },
+    //     })
+    //   }
+
+    //   transit.search(startPoint.value, endPoint.value)
+    // }
 
     const planRoute = () => {
       if (!startPoint.value || !endPoint.value) {
@@ -109,84 +206,21 @@ export default {
       // 清除之前的路线
       map.value.clearOverlays()
 
-      // 重新添加地点标记
-      campusLocations.forEach((location) => {
-        const marker = new window.BMapGL.Marker(new window.BMapGL.Point(location.lng, location.lat))
-        map.value.addOverlay(marker)
-      })
+      let walking = new window.BMapGL.WalkingRoute(map.value,{
+        renderOptions: {
+          map: map.value,
+          autoViewport: true
+      }})
 
-      // 创建路线规划实例
-      let transit
-      if (travelMode.value === "walking") {
-        transit = new window.BMapGL.WalkingRoute(map.value, {
-          onSearchComplete: (results) => {
-            if (transit.getStatus() === window.BMAP_STATUS_SUCCESS) {
-              const plan = results.getPlan(0)
-              routeInfo.value = {
-                distance: plan.getDistance(true),
-                duration: plan.getDuration(true),
-                steps: plan.getNumRoutes(),
-              }
+      walking.search(startPoint.value,endPoint.value)
 
-              // 绘制路线
-              const pts = plan.getPath()
-              const polyline = new window.BMapGL.Polyline(pts, {
-                strokeColor: "#1e40af",
-                strokeWeight: 6,
-                strokeOpacity: 0.8,
-              })
-              map.value.addOverlay(polyline)
-              map.value.setViewport(pts)
-            }
-            loading.value = false
-          },
-        })
-      } else if (travelMode.value === "transit") {
-        transit = new window.BMapGL.TransitRoute(map.value, {
-          onSearchComplete: (results) => {
-            if (transit.getStatus() === window.BMAP_STATUS_SUCCESS) {
-              const plan = results.getPlan(0)
-              routeInfo.value = {
-                distance: plan.getDistance(true),
-                duration: plan.getDuration(true),
-                steps: plan.getNumRoutes(),
-              }
-            }
-            loading.value = false
-          },
-        })
-      } else {
-        transit = new window.BMapGL.DrivingRoute(map.value, {
-          onSearchComplete: (results) => {
-            if (transit.getStatus() === window.BMAP_STATUS_SUCCESS) {
-              const plan = results.getPlan(0)
-              routeInfo.value = {
-                distance: plan.getDistance(true),
-                duration: plan.getDuration(true),
-                steps: plan.getNumRoutes(),
-              }
-
-              const pts = plan.getPath()
-              const polyline = new window.BMapGL.Polyline(pts, {
-                strokeColor: "#0ea5e9",
-                strokeWeight: 6,
-                strokeOpacity: 0.8,
-              })
-              map.value.addOverlay(polyline)
-              map.value.setViewport(pts)
-            }
-            loading.value = false
-          },
-        })
-      }
-
-      transit.search(startPoint.value, endPoint.value)
+      loading.value = false
     }
 
     const selectCourse = (course) => {
       selectedCourse.value = course
       endPoint.value = course.location
-      startPoint.value = "学生宿舍区"
+      startPoint.value = "同济大学(嘉定校区)-学生公寓"
     }
 
     onMounted(() => {
@@ -238,9 +272,9 @@ export default {
                   <div class="font-semibold text-text mb-2">{course.courseName}</div>
                   <div class="text-sm text-text-secondary space-y-1">
                     <div>地点: {course.location}</div>
-                    <div>
+                    {/* <div>
                       时间: {course.startTime} - {course.endTime}
-                    </div>
+                    </div> */}
                   </div>
                 </button>
               ))}
@@ -260,7 +294,7 @@ export default {
                   type="text"
                   value={startPoint.value}
                   onInput={(e) => (startPoint.value = e.target.value)}
-                  placeholder="输入起点或选择"
+                  placeholder="输入或选择起点"
                   list="start-locations"
                   class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
@@ -277,7 +311,7 @@ export default {
                   type="text"
                   value={endPoint.value}
                   onInput={(e) => (endPoint.value = e.target.value)}
-                  placeholder="输入终点或选择"
+                  placeholder="输入或选择终点"
                   list="end-locations"
                   class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
@@ -289,14 +323,14 @@ export default {
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <label class="block text-sm font-medium text-text mb-2">出行方式</label>
               <div class="flex gap-2">
                 <button
                   onClick={() => (travelMode.value = "walking")}
                   class={[
-                    "flex-1 px-4 py-2 rounded-lg font-medium transition-colors",
-                    travelMode.value === "walking" ? "bg-primary text-white" : "bg-surface text-text hover:bg-gray-200",
+                    "flex-1 px-4 py-2 border-2 rounded-lg font-medium transition-colors",
+                    travelMode.value === "walking" ? "bg-red-400 text-white" : "bg-surface text-text hover:bg-gray-200",
                   ]}
                 >
                   步行
@@ -304,8 +338,8 @@ export default {
                 <button
                   onClick={() => (travelMode.value = "transit")}
                   class={[
-                    "flex-1 px-4 py-2 rounded-lg font-medium transition-colors",
-                    travelMode.value === "transit" ? "bg-primary text-white" : "bg-surface text-text hover:bg-gray-200",
+                    "flex-1 px-4 py-2 border-2 rounded-lg font-medium transition-colors",
+                    travelMode.value === "transit" ? "bg-red-400 text-white" : "bg-surface text-text hover:bg-gray-200",
                   ]}
                 >
                   公交
@@ -313,19 +347,19 @@ export default {
                 <button
                   onClick={() => (travelMode.value = "driving")}
                   class={[
-                    "flex-1 px-4 py-2 rounded-lg font-medium transition-colors",
-                    travelMode.value === "driving" ? "bg-primary text-white" : "bg-surface text-text hover:bg-gray-200",
+                    "flex-1 px-4 py-2 border-2 rounded-lg font-medium transition-colors",
+                    travelMode.value === "driving" ? "bg-red-400 text-white" : "bg-surface text-text hover:bg-gray-200",
                   ]}
                 >
                   驾车
                 </button>
               </div>
-            </div>
+            </div> */}
 
             <button
               onClick={planRoute}
               disabled={loading.value}
-              class="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="border-2 w-full bg-primary hover:bg-blue-400 text-black font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading.value ? "规划中..." : "开始规划"}
             </button>
@@ -371,7 +405,7 @@ export default {
                     endPoint.value = location.name
                   }
                 }}
-                class="p-3 bg-surface hover:bg-primary hover:text-white rounded-lg text-sm font-medium transition-colors text-center"
+                class="p-3 bg-surface hover:bg-red-400 hover:text-text rounded-lg text-sm font-medium transition-colors text-center"
               >
                 {location.name}
               </button>

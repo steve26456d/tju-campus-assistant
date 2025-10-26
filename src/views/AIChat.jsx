@@ -13,7 +13,7 @@ export default {
         id: 1,
         role: "assistant",
         content:
-          "你好！我是同济AI学习助手，基于Deepseek-R1模型。我可以帮助你解答学习问题、提供学习建议。有什么我可以帮助你的吗？",
+          "你好！我是同济AI学习助手，基于qwen3-max模型。我可以帮助你解答学习问题、提供学习建议。有什么我可以帮助你的吗？",
         timestamp: new Date().toISOString(),
       },
     ])
@@ -61,7 +61,7 @@ export default {
       await scrollToBottom()
 
       try {
-        // 调用同济Agent平台的Deepseek-R1 API
+        // 调用qwen3-max
 
         const completion = await openai.chat.completions.create({
             model: "qwen3-max",
@@ -144,7 +144,7 @@ export default {
           <div class="flex items-center justify-between">
             <div>
               <h2 class="text-2xl font-bold text-text">AI学习助手</h2>
-              <p class="text-text-secondary mt-1">基于Deepseek-R1模型 · {messageCount.value}条消息</p>
+              <p class="text-text-secondary mt-1">基于qwen3-max模型 · {messageCount.value}条消息</p>
             </div>
             <button
               onClick={clearChat}
@@ -285,7 +285,7 @@ export default {
             <div>
               <div class="font-medium text-blue-900 text-sm mb-1">AI服务说明</div>
               <div class="text-xs text-blue-700">
-                本页面使用同济Agent平台提供的Deepseek-R1本地模型。实际部署时需要配置正确的API认证token。当前显示模拟响应用于演示。
+                本页面使用qwen3-max模型。实际部署时需要配置正确的API认证token。当前显示模拟响应用于演示。
               </div>
             </div>
           </div>

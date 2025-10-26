@@ -43,7 +43,7 @@ export default {
                     onClick={() => router.push(item.path)}
                     class={[
                       "px-4 py-2 rounded-lg font-medium transition-colors",
-                      route.path === item.path ? "bg-primary text-white" : "text-text hover:bg-surface",
+                      route.path === item.path ? "bg-red-400 text-text" : "text-text hover:bg-surface",
                     ]}
                   >
                     <span class="mr-2">{item.icon}</span>
@@ -84,7 +84,7 @@ export default {
                     }}
                     class={[
                       "w-full text-left px-4 py-3 rounded-lg font-medium transition-colors",
-                      route.path === item.path ? "bg-primary text-white" : "text-text hover:bg-surface",
+                      route.path === item.path ? "bg-red-400 text-text" : "text-text hover:bg-surface",
                     ]}
                   >
                     <span class="mr-2">{item.icon}</span>

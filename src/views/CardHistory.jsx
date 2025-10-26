@@ -174,7 +174,7 @@ export default {
     return () => (
       <div class="space-y-6">
         {/* Header with Balance */}
-        <div class="bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg p-6 text-white">
+        <div class="bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg p-6 text-text">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 class="text-2xl font-bold">一卡通余额</h2>
@@ -182,7 +182,7 @@ export default {
             </div>
             <button
               onClick={fetchCardHistory}
-              class="self-start sm:self-auto px-6 py-3 bg-white text-primary rounded-lg font-medium hover:bg-opacity-90 transition-all"
+              class="self-start sm:self-auto px-6 py-3 bg-white text-primary rounded-lg font-medium hover:bg-red-400 transition-all"
             >
               刷新余额
             </button>

@@ -225,6 +225,7 @@ export default {
                                 <div class="text-xs mt-2 space-y-1">
                                   <div>{course.teacher}</div>
                                   <div>{course.location}</div>
+                                  <div>{course.classroom}</div>
                                   <div class="text-xs opacity-75">{course.weeks}</div>
                                 </div>
                               </div>
